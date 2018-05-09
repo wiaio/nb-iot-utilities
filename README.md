@@ -89,7 +89,7 @@ This works by essentially:
 * Opens a socket and sends a message via udp to Wia
 
 The output should look like the image below:
-![](images/serial_accesstoken.png)
+![](images/publishing_an_event_to_wia.png)
 
 ### Common errors
 Some devices might be on older firmware thats not compatilbe with the network you are trying to connect with. You can update your devices firmware by following the instructions [here](http://support.sodaq.com/sodaq-one/firmware-upgrade/)
