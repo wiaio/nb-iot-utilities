@@ -1,13 +1,13 @@
-## Initial Setup of nb-iot and publishing an Event to Wia
+## Initial Setup of NB-IoT and Publishing an Event to Wia
 
 In this tutorial, we're going through the initial steps to get setup with nb-iot and publish an Event to Wia.
 
 
 ### Components
-* Sodaq nb-iot shield (Deluxe)
-* nb-iot compatible antenna
-* Crowduino M0
-* nb-iot compatible sim
+* Sodaq nb-iot shield, can be found [here](https://shop.sodaq.com/en/sodaq-narrowband-board-n211.html)
+* NB-IoT  compatible antenna
+* Crowduino M0, can be found [here](https://www.elecrow.com/crowduino-m0-sd-p-1649.html)
+* NB-IoT  compatible sim
 
 ### Installing Python and Pyserial
 
@@ -92,7 +92,7 @@ The output should look like the image below:
 ![](images/publishing_an_event_to_wia.png)
 
 ### Common errors
-Some devices might be on older firmware thats not compatilbe with the network you are trying to connect with. You can update your devices firmware by following the instructions [here](http://support.sodaq.com/sodaq-one/firmware-upgrade/)
+Some devices might be on older firmware that's not compatible with the network you are trying to connect with. You can update your devices firmware by following the instructions [here](http://support.sodaq.com/sodaq-one/firmware-upgrade/)
 
 If you are still having trouble connecting, contact your network operator to make sure your sim is correct and enabled.
 
