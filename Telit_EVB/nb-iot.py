@@ -264,7 +264,7 @@ def main(argv):
             data_json = json.dumps(data)
             data_len = str((len(data_json.encode("hex")) + len(coap_packet)))
             print "Sending message: "
-            send = "AT#SSENDEXT=1,{}\n".format(data_len) + coap_packet + data_json.encode("hex") + "\r"
+            send = "AT#SSENDEXT=1,{0}\n".format(data_len) + coap_packet + data_json.encode("hex") + "\r"
             print send, "\n"
             serialport.write(send)
             time.sleep(5)

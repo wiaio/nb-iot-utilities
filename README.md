@@ -1,12 +1,12 @@
 ## Initial Setup of NB-IoT and Publishing an Event to Wia
 
-In this tutorial, we're going through the initial steps to get setup with nb-iot and publish an Event to Wia.
+In this tutorial, we're going through the initial steps to get setup with NB-IoT and publish an Event to Wia.
 
 
 ### Components
-* Sodaq nb-iot shield, can be found [here](https://shop.sodaq.com/en/sodaq-narrowband-board-n211.html)
+* [SODAQ SARA N211](https://shop.sodaq.com/en/sodaq-narrowband-board-n211.html)
 * NB-IoT  compatible antenna
-* Crowduino M0, can be found [here](https://www.elecrow.com/crowduino-m0-sd-p-1649.html)
+* [Crowduino M0](https://www.elecrow.com/crowduino-m0-sd-p-1649.html)
 * NB-IoT  compatible sim
 
 ### Installing Python and Pyserial
@@ -46,8 +46,10 @@ Alternatively you can download the zip file [here](https://github.com/wiaio/nb-i
 Note:
 For Linux, you may need to run the two commands below. Once you've completed that, reboot your computer. This will add permissions that will allow you to upload a sketch to the board.
 
-`sudo usermod -a -G tty ${USER}`
-`sudo usermod -a -G dialout  ${USER}`
+```
+sudo usermod -a -G tty ${USER}
+sudo usermod -a -G dialout  ${USER}
+```
 
 ### Windows
 * Download and install the FTDI drivers from [here](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers). Select the appropriate version for your operating system and architecture.
@@ -56,7 +58,7 @@ For Linux, you may need to run the two commands below. Once you've completed tha
  * Keep note of the COM port (e.g. COM4)
 
 ### Uploading setup code to your Arduino
-In order to communicate with your NB-IoT shield with your Arudino, you'll need to upload communicate that gives power to the Shield and provides funnel for the instructions.
+In order to communicate with your NB-IoT shield with your Arduino, you'll need to flash the Arduino with code that gives power to the Shield and provides a tunnel for the instructions.
 
 * Install the Arduino IDE (Integrated development environment). This is where
 You can download it for Mac OS X, Windows and Linux <a href="https://www.arduino.cc/en/main/software" target="_blank">here</a>.
@@ -72,10 +74,10 @@ In the Arduino IDE:
 * Select the Arduino M0 board type by going to `Tools > Board`
 * Select the port that displays `Arduino M0` 
 
-* Now copy and paste the [intial_config.ino](intial_config.ino) code into the Arduino IDE.
+* Now copy and paste the [intial_config.ino](intial_config.ino) code into the Arduino IDE
 * Click `Upload` to flash the board
 
-Now your board should be ready to communicate with.
+Now you should be ready to communicate to your shield.
 
 
 ### Updating nb-iot.py
