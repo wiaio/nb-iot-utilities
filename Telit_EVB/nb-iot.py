@@ -32,7 +32,7 @@ solicited = "1"
 network_operator = os.getenv("network_operator","27201")
 
 # Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
-serial_name = os.getenv("serial_name", "/dev/ttyACM0")
+serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
 
 #acces token is your Device secret key found in the Wia dashboard
 data = {"accessToken": os.getenv("accessToken", "d_sk_5PhJI9SLiGHCubldNMbV9eli"), "name": "nb-iot", "data": "Vodafone"}
@@ -148,7 +148,7 @@ def main(argv):
                 print bcolours.ok()
 
             print "Forcing to register with network operator: ", str(network_operator), "Mode manual"
-            serialport.write("AT+COPS=1,2,\"27201\"\r")
+            serialport.write("AT+COPS=1,2,\"27201\",7\r")
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -171,7 +171,7 @@ def main(argv):
                     print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. If still not connecting, check if your SIM is activated", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
-            serialport.write("AT+NPING=8.8.8.8\r")
+            serialport.write("AT#PING=8.8.8.8\r")
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -214,7 +214,7 @@ def main(argv):
         elif opt in ("-p",):
             ping_number = 1
             print "Pinging IP address: {0}".format(remote_ip)
-            serialport.write("AT+NPING={0}\r".format(remote_ip))
+            serialport.write("AT#PING={0}\r".format(remote_ip))
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -235,7 +235,7 @@ def main(argv):
         elif opt in ("-q",):
             print
             "pinging Gooogle's dns (8.8.8.8)"
-            serialport.write("AT+NPING=8.8.8.8\r")  # .format(remote_ip))
+            serialport.write("AT#PING=8.8.8.8\r")  # .format(remote_ip))
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -251,7 +251,7 @@ def main(argv):
         elif opt in ("-t"):
             print "\n", bcolours.BOLD + "Creating socket and sending message", bcolours.ENDC
             # Create Socket
-            sock = "AT+NSOCR=DGRAM,17,16667," + solicited + "\r"
+            sock = "AT#SD=1,1,{0},{1},0,1235,1\r".format(remote_port, remote_ip)
             serialport.write(sock)
             time.sleep(3)
             response = serialport.readlines(None)
@@ -262,11 +262,9 @@ def main(argv):
             coap = "40020000ff7b2264617461223a2274657374222c226e616d65223a226e622d696f74222c226174223a22645f736b5f3550684a4939534c6947484375626c644e4d625639656c69227d"
             coap_packet = "40020000b66576656e7473ff" #"40020000ff"
             data_json = json.dumps(data)
-            data_len = str((len(data_json.encode("hex")) + len(coap_packet))/2)
-            #data_len = str((len(coap))/2)
+            data_len = str((len(data_json.encode("hex")) + len(coap_packet)))
             print "Sending message: "
-            #send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port + "," + data_len + "," + coap + "\r"
-            send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port + "," + data_len + "," + coap_packet + data_json.encode("hex") + "\r"
+            send = "AT#SSENDEXT=1,{}\n".format(data_len) + coap_packet + data_json.encode("hex") + "\r"
             print send, "\n"
             serialport.write(send)
             time.sleep(5)
@@ -275,7 +273,7 @@ def main(argv):
                 print bcolours.OKGREEN, "Sent message: ", response[1].replace('\r\n', ''), "With socket: {0}".format(socket), "Message size: {0}".format(data_len), bcolours.ENDC, "\n"
             else:
                 print bcolours.FAIL, "Failed to send message", bcolours.ENDC, "\n"
-            sock = "AT+NSOCL={0}\r".format(socket)
+            sock = "at+sd=1\r".format(socket)
             serialport.write(sock)
             response = serialport.readlines(None)
             print "Closing socket"

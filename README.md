@@ -55,6 +55,29 @@ For Linux, you may need to run the two commands below. Once you've completed tha
 * The COM port for the Pycom device will be listed as `USB Serial Device` or something similar
  * Keep note of the COM port (e.g. COM4)
 
+### Uploading setup code to your Arduino
+In order to communicate with your NB-IoT shield with your Arudino, you'll need to upload communicate that gives power to the Shield and provides funnel for the instructions.
+
+* Install the Arduino IDE (Integrated development environment). This is where
+You can download it for Mac OS X, Windows and Linux <a href="https://www.arduino.cc/en/main/software" target="_blank">here</a>.
+
+In the Arduino IDE: 
+* Go to menu:  `Tools > Board > Boards Manager`
+* Search for `Arduino SAMD`. When found, click `Install` 
+
+![](images/aruinodsambboard.png)
+
+In the Arduino IDE: 
+
+* Select the Arduino M0 board type by going to `Tools > Board`
+* Select the port that displays `Arduino M0` 
+
+* Now copy and paste the [intial_config.ino](intial_config.ino) code into the Arduino IDE.
+* Click `Upload` to flash the board
+
+Now your board should be ready to communicate with.
+
+
 ### Updating nb-iot.py
 
 Before we interface with our device, there are a few variables that need to be updated the file `nb-iot.py`.
@@ -76,6 +99,7 @@ This command checks if the device is working with our code by running the simpli
 For a full list of commands available:
 * For Windows, in power-shell, run `python nb-iot.py -h` in the power-shell terminal.
 * For Mac/Linux open a terminal and run `python nb-iot.py -h` in the terminal.
+
 
 ### Publishing an Event to Wia
 To publish an Event to Wia with your nb-iot device, run the following:
