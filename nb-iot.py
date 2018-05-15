@@ -32,7 +32,7 @@ solicited = "1"
 network_operator = os.getenv("network_operator","27201")
 
 # Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
-serial_name = os.getenv("serial_name", "/dev/ttyACM0")
+serial_name = os.getenv("serial_name", "/dev/ttyACM1")
 
 #acces token is your Device secret key found in the Wia dashboard
 data = {"accessToken": os.getenv("accessToken", "d_sk_5PhJI9SLiGHCubldNMbV9eli"), "name": "nb-iot", "data": "Vodafone"}
@@ -148,7 +148,7 @@ def main(argv):
                 print bcolours.ok()
 
             print "Forcing to register with network operator: ", str(network_operator), "Mode manual"
-            serialport.write("AT+COPS=1,2,\"27201\"\r")
+            serialport.write("AT+COPS=1,2,\"27201\",7\r")
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -168,7 +168,7 @@ def main(argv):
                     break
                 attempts-=1
                 if attempts == 0:
-                    print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. If still not connecting, check if your SIM is activated", bcolours.ENDC
+                    print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. \n If still not connecting, check your signal strength python nb-iot.py -c (response rssi should > 9", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
             serialport.write("AT+NPING=8.8.8.8\r")
@@ -263,9 +263,7 @@ def main(argv):
             coap_packet = "40020000b66576656e7473ff" #"40020000ff"
             data_json = json.dumps(data)
             data_len = str((len(data_json.encode("hex")) + len(coap_packet))/2)
-            #data_len = str((len(coap))/2)
             print "Sending message: "
-            #send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port + "," + data_len + "," + coap + "\r"
             send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port + "," + data_len + "," + coap_packet + data_json.encode("hex") + "\r"
             print send, "\n"
             serialport.write(send)
