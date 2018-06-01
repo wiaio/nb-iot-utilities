@@ -32,10 +32,10 @@ solicited = "1"
 network_operator = os.getenv("network_operator","27201")
 
 # Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
-serial_name = os.getenv("serial_name", "/dev/ttyACM1")
+serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
 
 #acces token is your Device secret key found in the Wia dashboard
-data = {"accessToken": os.getenv("accessToken", "d_sk_5PhJI9SLiGHCubldNMbV9eli"), "name": "nb-iot", "data": "Vodafone"}
+data = {"accessToken": os.getenv("accessToken", "d_sk_wia_testing"), "name": "nb-iot", "data": "Vodafone"}
 
 class bcolours:
     HEADER = '\033[95m'
@@ -259,8 +259,7 @@ def main(argv):
             if "OK" in str(response):
                 socket = response[1].replace('\r\n', '')
                 print bcolours.OKGREEN, "Created socket: ", response[1].replace('\r\n', ''), bcolours.ENDC , "\n"
-            coap = "40020000ff7b2264617461223a2274657374222c226e616d65223a226e622d696f74222c226174223a22645f736b5f3550684a4939534c6947484375626c644e4d625639656c69227d"
-            coap_packet = "40020000b66576656e7473ff" #"40020000ff"
+            coap_packet = "40020000b66576656e7473ff"
             data_json = json.dumps(data)
             data_len = str((len(data_json.encode("hex")) + len(coap_packet))/2)
             print "Sending message: "
