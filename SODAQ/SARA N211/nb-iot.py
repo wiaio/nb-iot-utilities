@@ -108,8 +108,6 @@ def main(argv):
 
 
         elif opt == '-k':
-            print str(response).replace('\r\n', '')
-            time.sleep(2)
             print "Rebooting the NB-IoT module..."
             # Reset
             serialport.write("AT+NRB\r")
@@ -123,7 +121,7 @@ def main(argv):
 
 
         elif opt in ("-n"):
-            print bcolours.BOLD + "Registration and Context Activation",bcolours.ENDC
+            print bcolours.BOLD + "Registration and Context Activation", bcolours.ENDC
             print "\n", "Setting the presentation of network registration to show registration information and location"
             serialport.write("AT+CEREG=2\r")
             response = serialport.readlines(None)
@@ -159,8 +157,8 @@ def main(argv):
                 print str(response).replace('\r\n', '')
                 print "Trying again"
             time.sleep(3)
-            print "\n","Checking network registration status (May take up to a minute)"
-            print "\n", "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
+            print "\n", "Checking network registration status (May take up to a minute)"
+            print "\n",  "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
             attempts = 500
             while attempts:
                 time.sleep(3)
