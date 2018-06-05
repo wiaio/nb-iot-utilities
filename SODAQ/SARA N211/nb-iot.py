@@ -108,6 +108,8 @@ def main(argv):
 
 
         elif opt == '-k':
+            print str(response).replace('\r\n', '')
+            time.sleep(2)
             print "Rebooting the NB-IoT module..."
             # Reset
             serialport.write("AT+NRB\r")
@@ -130,12 +132,13 @@ def main(argv):
             else:
                 print str(response).replace('\r\n', '')
             time.sleep(2)
+
             print "Setting module to maximum functionality"
             serialport.write("AT+CFUN=1\r")
             time.sleep(5)
             response = serialport.readlines(None)
             if "OK" not in str(response):
-                print  str(response).replace('\r\n', '')
+                print str(response).replace('\r\n', '')
             else:
                 print bcolours.ok()
             time.sleep(2)
@@ -158,7 +161,7 @@ def main(argv):
             time.sleep(3)
             print "\n","Checking network registration status (May take up to a minute)"
             print "\n", "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
-            attempts = 50
+            attempts = 500
             while attempts:
                 time.sleep(3)
                 serialport.write("AT+CEREG?\r")
@@ -168,7 +171,7 @@ def main(argv):
                     break
                 attempts-=1
                 if attempts == 0:
-                    print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. \n If still not connecting, check your signal strength python nb-iot.py -c (response rssi should > 9", bcolours.ENDC
+                    print"\n", bcolours.FAIL, "Network not registered, try again with 'python nb-iot.py -n' as the argument. \n If still not connecting, check your signal strength 'python nb-iot.py -c' (response rssi should > 9)", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
             serialport.write("AT+NPING=8.8.8.8\r")

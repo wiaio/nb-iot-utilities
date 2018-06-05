@@ -74,7 +74,7 @@ In the Arduino IDE:
 * Select the Arduino M0 board type by going to `Tools > Board`
 * Select the port that displays `Arduino M0` 
 
-* Now copy and paste the [intial_config.ino](intial_config.ino) code into the Arduino IDE
+* Now copy and paste the [intial_config.ino](SODAQ/SARA%20N211/intial_config.ino) code into the Arduino IDE
 * Click `Upload` to flash the board
 
 Now you should be ready to communicate to your shield.
