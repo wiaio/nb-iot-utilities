@@ -29,13 +29,13 @@ apname = os.getenv("apn", "nb.inetd.gdsp")
 NBAND = 20
 solicited = "1"
 # Number used to register with a network operator
-network_operator = os.getenv("network_operator","27201")
+network_operator = os.getenv("network_operator", "27201")
 
-# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
+# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 | /dev/ttyUSB0 on Linux
 serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
 
 #acces token is your Device secret key found in the Wia dashboard
-data = {"accessToken": os.getenv("accessToken", "d_sk_wia_testing"), "name": "nb-iot", "data": "Vodafone"}
+data = {"accessToken": os.getenv("accessToken", "d_sk_test_dev"), "name": "nb-iot", "data": "testing"}
 
 class bcolours:
     HEADER = '\033[95m'
@@ -104,6 +104,11 @@ def main(argv):
             response = serialport.readlines(None)
             print "Configuration"
             for config in response:
+                if "Firmware" in config:
+                    if "B656" in config:
+                        print bcolours.OKGREEN, "Correct Version", bcolours.ENDC
+                    else:
+                        print bcolours.FAIL, "Wrong Version, please update of if Version Greater than B565 , please use other script", bcolours.ENDC
                 print config.replace('\r\n', '')
 
 
@@ -157,7 +162,7 @@ def main(argv):
                 print str(response).replace('\r\n', '')
                 print "Trying again"
             time.sleep(3)
-            print "\n", "Checking network registration status (May take up to a minute)"
+            print "\n", "Checking network registration status (May take a couple of minutes)"
             print "\n",  "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
             attempts = 500
             while attempts:
