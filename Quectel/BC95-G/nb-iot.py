@@ -29,13 +29,13 @@ apname = os.getenv("apn", "nb.inetd.gdsp")
 NBAND = 20
 solicited = "1"
 # Number used to register with a network operator
-network_operator = os.getenv("network_operator","27201")
+network_operator = os.getenv("network_operator", "27201")
 
-# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
+# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 | /dev/ttyUSB0 on Linux
 serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
 
 #acces token is your Device secret key found in the Wia dashboard
-data = {"accessToken": os.getenv("accessToken", "d_sk_wia_testing"), "name": "nb-iot", "data": "Vodafone"}
+data = {"accessToken": os.getenv("accessToken", "d_sk_test_dev"), "name": "nb-iot", "data": "testing"}
 
 class bcolours:
     HEADER = '\033[95m'
@@ -108,7 +108,7 @@ def main(argv):
 
 
         elif opt == '-k':
-            serialport.write("AT+CFUN=1\r")
+            serialport.write("AT+NBAND={0}\r".format(NBAND))
             time.sleep(5)
             response = serialport.readlines(None)
             if "OK" not in str(response):
@@ -116,33 +116,21 @@ def main(argv):
             else:
                 print bcolours.ok()
             time.sleep(2)
-            serialport.write("AT+NBAND=20\r")
-            response = serialport.readlines(None)
-            serialport.write("AT+NCONFIG=AUTOCONNECT,FALSE\r")
-            response = serialport.readlines(None)
-            #if "OK" in str(response):
-            #    print bcolours.ok()
-            #else:
-            print str(response).replace('\r\n', '')
-            time.sleep(2)
+
             print "Rebooting the NB-IoT module..."
             # Reset
             serialport.write("AT+NRB\r")
             time.sleep(5)
             response = serialport.readlines(None)
             if "OK" not in str(response):
-                print  str(response).replace('\r\n', '')
+                print str(response).replace('\r\n', '')
                 exit(0)
             else:
                 print bcolours.OKGREEN, "REBOOTING OK", bcolours.ENDC + "\n"
 
 
         elif opt in ("-n"):
-            serialport.write("AT+NBAND=?\r")
-            response = serialport.readlines(None)
-            print str(response).replace('\r\n', '')
-            time.sleep(2)
-            print bcolours.BOLD + "Registration and Context Activation",bcolours.ENDC
+            print bcolours.BOLD + "Registration and Context Activation", bcolours.ENDC
             print "\n", "Setting the presentation of network registration to show registration information and location"
             serialport.write("AT+CEREG=2\r")
             response = serialport.readlines(None)
@@ -150,7 +138,7 @@ def main(argv):
                 print bcolours.ok()
             else:
                 print str(response).replace('\r\n', '')
-            time.sleep(2)
+
 
             print "Setting module to maximum functionality"
             serialport.write("AT+CFUN=1\r")
@@ -161,6 +149,7 @@ def main(argv):
             else:
                 print bcolours.ok()
             time.sleep(2)
+
             print "Setting the Packet Data Protocol to IP with the APN {}".format(apname)
             serialport.write("AT+CGDCONT=0,\"IP\",\"" + apname + "\"\r")
             response = serialport.readlines(None)
@@ -178,9 +167,10 @@ def main(argv):
                 print str(response).replace('\r\n', '')
                 print "Trying again"
             time.sleep(3)
-            print "\n","Checking network registration status (May take up to a minute)"
-            print "\n", "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
-            attempts = 10000
+
+            print "\n", "Checking network registration status (May take a couple of minutes)"
+            print "\n",  "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
+            attempts = 5000
             while attempts:
                 time.sleep(3)
                 serialport.write("AT+CEREG?\r")
@@ -188,9 +178,9 @@ def main(argv):
                 print response[1].replace('\r\n', '')
                 if '+CEREG:2,5' in str(response):
                     break
-                attempts-=1
+                attempts -= 1
                 if attempts == 0:
-                    print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. \n If still not connecting, check your signal strength python nb-iot.py -c (response rssi should > 9)", bcolours.ENDC
+                    print"\n", bcolours.FAIL, "Network not registered, try again with 'python nb-iot.py -n' as the argument. \n If still not connecting, check your signal strength 'python nb-iot.py -c' (response rssi should > 9)", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
             serialport.write("AT+NPING=8.8.8.8\r")
@@ -215,7 +205,7 @@ def main(argv):
             print str(response).replace('\r\n', '')
 
         elif opt in ("-m",):
-            print bcolours.BOLD,"Checking if you are attached to the network", bcolours.BOLD
+            print bcolours.BOLD, "Checking if you are attached to the network", bcolours.BOLD
             serialport.write("AT+CGATT?\r")
             response = serialport.readlines(None)
             if "1" in response[1]:
@@ -231,7 +221,6 @@ def main(argv):
             time.sleep(10)
             response = serialport.readlines(None)
             print response
-
 
         elif opt in ("-p",):
             ping_number = 1

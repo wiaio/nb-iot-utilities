@@ -29,23 +29,23 @@ apname = os.getenv("apn", "nb.inetd.gdsp")
 NBAND = 20
 solicited = "1"
 # Number used to register with a network operator
-network_operator = os.getenv("network_operator", "27201")
+network_operator = os.getenv("network_operator","27201")
 
-# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 | /dev/ttyUSB0 on Linux
-serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
+# Serial port of device. e.g. com4 on Windows, /dev/ttyACM0 on Linux
+serial_name = os.getenv("serial_name", "/dev/ttyACM0")
 
 #acces token is your Device secret key found in the Wia dashboard
-data = {"accessToken": os.getenv("accessToken", "d_sk_test_dev"), "name": "nb-iot", "data": "testing"}
+data = {"accessToken": os.getenv("accessToken", "d_sk_wia_testing"), "name": "nb-iot", "data": "Vodafone"}
 
 class bcolours:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
     @staticmethod
     def ok():
@@ -104,11 +104,6 @@ def main(argv):
             response = serialport.readlines(None)
             print "Configuration"
             for config in response:
-                if "Firmware" in config:
-                    if "B656" in config:
-                        print bcolours.OKGREEN, "Correct Version", bcolours.ENDC
-                    else:
-                        print bcolours.FAIL, "Wrong Version, please update of if Version Greater than B565 , please use other script", bcolours.ENDC
                 print config.replace('\r\n', '')
 
 
@@ -119,14 +114,14 @@ def main(argv):
             time.sleep(5)
             response = serialport.readlines(None)
             if "OK" not in str(response):
-                print str(response).replace('\r\n', '')
+                print  str(response).replace('\r\n', '')
                 exit(0)
             else:
                 print bcolours.OKGREEN, "REBOOTING OK", bcolours.ENDC + "\n"
 
 
         elif opt in ("-n"):
-            print bcolours.BOLD + "Registration and Context Activation", bcolours.ENDC
+            print bcolours.BOLD + "Registration and Context Activation",bcolours.ENDC
             print "\n", "Setting the presentation of network registration to show registration information and location"
             serialport.write("AT+CEREG=2\r")
             response = serialport.readlines(None)
@@ -135,17 +130,15 @@ def main(argv):
             else:
                 print str(response).replace('\r\n', '')
             time.sleep(2)
-
             print "Setting module to maximum functionality"
             serialport.write("AT+CFUN=1\r")
             time.sleep(5)
             response = serialport.readlines(None)
             if "OK" not in str(response):
-                print str(response).replace('\r\n', '')
+                print  str(response).replace('\r\n', '')
             else:
                 print bcolours.ok()
             time.sleep(2)
-
             print "Setting the Packet Data Protocol to IP with the APN {}".format(apname)
             serialport.write("AT+CGDCONT=0,\"IP\",\"" + apname + "\"\r")
             response = serialport.readlines(None)
@@ -163,9 +156,9 @@ def main(argv):
                 print str(response).replace('\r\n', '')
                 print "Trying again"
             time.sleep(3)
-            print "\n", "Checking network registration status (May take a couple of minutes)"
-            print "\n",  "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
-            attempts = 500
+            print "\n","Checking network registration status (May take up to a minute)"
+            print "\n", "Response: \n\t +CEREG:< (2) Data-presentation set earlier>,\n\t <status: 1=Not registered, 2=Searching, 5=Registered>,\n\t <tracking code>,\n\t <cell-id>,\n\t (7) specifies the System Information messages which give the information about whether the serving cell supports EGPRS\n"
+            attempts = 10
             while attempts:
                 time.sleep(3)
                 serialport.write("AT+CEREG?\r")
@@ -175,7 +168,7 @@ def main(argv):
                     break
                 attempts-=1
                 if attempts == 0:
-                    print"\n", bcolours.FAIL, "Network not registered, try again with 'python nb-iot.py -n' as the argument. \n If still not connecting, check your signal strength 'python nb-iot.py -c' (response rssi should > 9)", bcolours.ENDC
+                    print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. \n If still not connecting, check your signal strength python nb-iot.py -c (response rssi should > 9", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
             serialport.write("AT+NPING=8.8.8.8\r")
@@ -200,7 +193,7 @@ def main(argv):
             print str(response).replace('\r\n', '')
 
         elif opt in ("-m",):
-            print bcolours.BOLD, "Checking if you are attached to the network", bcolours.BOLD
+            print bcolours.BOLD,"Checking if you are attached to the network", bcolours.BOLD
             serialport.write("AT+CGATT?\r")
             response = serialport.readlines(None)
             if "1" in response[1]:
@@ -217,10 +210,11 @@ def main(argv):
             response = serialport.readlines(None)
             print response
 
+
         elif opt in ("-p",):
             ping_number = 1
             print "Pinging IP address: {0}".format(remote_ip)
-            serialport.write("AT+NPING={0}\r".format(remote_ip))
+            serialport.write("AT+NPING=\"{0}\"\r".format(remote_ip))
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -241,7 +235,7 @@ def main(argv):
         elif opt in ("-q",):
             print
             "pinging Gooogle's dns (8.8.8.8)"
-            serialport.write("AT+NPING=8.8.8.8\r")  # .format(remote_ip))
+            serialport.write("AT+NPING=\"8.8.8.8\"\r")  # .format(remote_ip))
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -257,9 +251,10 @@ def main(argv):
         elif opt in ("-t"):
             print "\n", bcolours.BOLD + "Creating socket and sending message", bcolours.ENDC
             # Create Socket
-            sock = "AT+NSOCR=DGRAM,17,16667," + solicited + "\r"
+            sock = "AT+NSOCR=\"DGRAM\",17,16667," + solicited + "\r"
             serialport.write(sock)
-            time.sleep(3)
+            print sock
+            time.sleep(10)
             response = serialport.readlines(None)
             socket = 0
             if "OK" in str(response):
@@ -269,7 +264,7 @@ def main(argv):
             data_json = json.dumps(data)
             data_len = str((len(data_json.encode("hex")) + len(coap_packet))/2)
             print "Sending message: "
-            send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port + "," + data_len + "," + coap_packet + data_json.encode("hex") + "\r"
+            send = "AT+NSOST={0},".format(socket) + "\"" + remote_ip + "\"" + "," +remote_port + "," + data_len + "," + "\"" + coap_packet +  data_json.encode("hex") + "\"" + "\r"
             print send, "\n"
             serialport.write(send)
             time.sleep(5)
@@ -291,7 +286,8 @@ def main(argv):
         elif opt in ("-s"):
             print "\n", "Creating socket and sending message"
             print
-            sock = "AT+NSOCR=DGRAM,17,16667," + solicited + "\r"
+            sock = "AT+NSOCR=\"DGRAM\",17,16667," + solicited + "\r"
+            print sock
             serialport.write(sock)
             time.sleep(3)
             response = serialport.readlines(None)
@@ -302,7 +298,7 @@ def main(argv):
             data_json = json.dumps(data)
             data_len = str(len(data_json.encode("hex"))/2)
             print "Sending message: "
-            send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port+ "," + data_len + "," + data_json.encode("hex") + "\r"
+            send = "AT+NSOST={0},".format(socket) + "\"" + remote_ip + "\"" + "," +remote_port+ "," + data_len + "," + "\"" + data_json.encode("hex") + "\"" + "\r"
             print send
             serialport.write(send)
             time.sleep(5)
@@ -321,7 +317,7 @@ def main(argv):
                     response = serialport.readlines(None)
                     rdata = response[1].split(',')[4]
                     print "Attempt to read: ", rdata.decode("hex")
-            sock = "AT+NSOCL=" + socket + "\r"
+            sock = "AT+NSOCL=" + str(socket) + "\r"
             serialport.write(sock)
             response = serialport.readlines(None)
 
