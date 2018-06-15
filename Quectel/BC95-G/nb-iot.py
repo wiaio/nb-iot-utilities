@@ -35,7 +35,7 @@ network_operator = os.getenv("network_operator", "27201")
 serial_name = os.getenv("serial_name", "/dev/ttyUSB0")
 
 #acces token is your Device secret key found in the Wia dashboard
-data = {"accessToken": os.getenv("accessToken", "d_sk_test_dev"), "name": "nb-iot", "data": "testing"}
+data = {"accessToken": os.getenv("accessToken", "d_sk_5PhJI9SLiGHCubldNMbV9eli"), "name": "nb-iot", "data": "testing"}
 
 class bcolours:
     HEADER = '\033[95m'
@@ -157,9 +157,10 @@ def main(argv):
                 print str(response).replace('\r\n', '')
             else:
                 print bcolours.ok()
+            time.sleep(2)
 
             print "Forcing to register with network operator: ", str(network_operator), "Mode manual"
-            serialport.write("AT+COPS=1,2,\"27201\",7\r")
+            serialport.write("AT+COPS=1,2,\"27201\"\r")
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
@@ -278,7 +279,7 @@ def main(argv):
             print send, "\n"
             serialport.write(send)
             time.sleep(5)
-            response = serialport.readlines(20)
+            response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.OKGREEN, "Sent message: ", response[1].replace('\r\n', ''), "With socket: {0}".format(socket), "Message size: {0}".format(data_len), bcolours.ENDC, "\n"
             else:
