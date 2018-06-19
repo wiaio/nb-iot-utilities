@@ -106,8 +106,8 @@ def main(argv):
             for config in response:
                 print config.replace('\r\n', '')
 
-
         elif opt == '-k':
+            print "Setting the band to {0}".format(NBAND)
             serialport.write("AT+NBAND={0}\r".format(NBAND))
             time.sleep(5)
             response = serialport.readlines(None)
@@ -292,44 +292,6 @@ def main(argv):
                 print bcolours.OKGREEN, "Closed socket: ", socket, bcolours.ENDC
             else:
                 print bcolours.OKGREEN, "Failed to close socket", bcolours.ENDC
-
-
-        elif opt in ("-s"):
-            print "\n", "Creating socket and sending message"
-            print
-            sock = "AT+NSOCR=DGRAM,17,16667," + solicited + "\r"
-            serialport.write(sock)
-            time.sleep(3)
-            response = serialport.readlines(None)
-            socket = 0
-            if "OK" in str(response):
-                socket = response[1].replace('\r\n', '')
-                print "Created socket: ", response[1].replace('\r\n', '')
-            data_json = json.dumps(data)
-            data_len = str(len(data_json.encode("hex"))/2)
-            print "Sending message: "
-            send = "AT+NSOST={0},".format(socket) + remote_ip + "," +remote_port+ "," + data_len + "," + data_json.encode("hex") + "\r"
-            print send
-            serialport.write(send)
-            time.sleep(5)
-            response = serialport.readlines(20)
-            if "OK" in str(response):
-                print "Sent message: ", response[1], "With socket: {0}".format(socket), "Message size: {0}".format(data_len)
-            else:
-                print "Failed to send message"
-            print response
-            # Read data
-            if len(response) == 6:
-                if "+NSONMI:" in response[5]:
-                    rlength = response[5].replace('\r\n', '')
-                    read = "AT+NSORF=0," + rlength.split(',')[1] + "\r"
-                    serialport.write(read)
-                    response = serialport.readlines(None)
-                    rdata = response[1].split(',')[4]
-                    print "Attempt to read: ", rdata.decode("hex")
-            sock = "AT+NSOCL=" + socket + "\r"
-            serialport.write(sock)
-            response = serialport.readlines(None)
 
 
 
