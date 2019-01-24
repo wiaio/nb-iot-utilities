@@ -164,14 +164,14 @@ def main(argv):
                 serialport.write("AT+CEREG?\r")
                 response = serialport.readlines(None)
                 print response[1].replace('\r\n', '')
-                if '+CEREG:2,5' in str(response):
+                if '2,5' in str(response):
                     break
                 attempts-=1
                 if attempts == 0:
                     print"\n", bcolours.FAIL, "Network not registered, try again with just -n as the argument. \n If still not connecting, check your signal strength python nb-iot.py -c (response rssi should > 9", bcolours.ENDC
                     exit(0)
             print "\n","Pinging google DNS (IP: 8.8.8.8) within 10 seconds to keep connection open (expected NB-iot behaviour)"
-            serialport.write("AT+NPING=8.8.8.8\r")
+            serialport.write("AT+NPING=\"8.8.8.8\"\r")
             response = serialport.readlines(None)
             if "OK" in str(response):
                 print bcolours.ok()
